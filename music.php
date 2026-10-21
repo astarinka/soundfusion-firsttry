@@ -1,99 +1,37 @@
 <?php
-require_once('./function.php');
-echo '<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoundFusion - my music</title>
-    <link rel="stylesheet" href="style.css">
-</head>';
-echo '<body>
-    <header><a href="index.php">
-        <img src="SoundFusion white.png" class="logopos" /></a>
-    <nav class="menu-button">';
-
+require_once __DIR__ . '/function.php';
 $db = connectDB();
-
-$sql = "SELECT * FROM main ORDER BY id";
-if ($stmt = $db->prepare($sql)) {
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $userid = htmlspecialchars($row["id"], ENT_QUOTES, 'UTF-8');
-                $username = htmlspecialchars($row["name"], ENT_QUOTES, 'UTF-8');
-                $userlink = htmlspecialchars($row["link"], ENT_QUOTES, 'UTF-8');
-                $activeClass = isActive(basename($userlink)) ? 'active' : '';
-                echo '<a href="' . $userlink . '"><button class="' . $activeClass . '">' . $username . '</button></a>';
-            }
-        } else {
-            echo "<p>Нет данных в таблице menu.</p>";
-        }
-    } else {
-        echo "<p>Ошибка запроса: " . $db->error . "</p>";
-    }
-}
-
-echo '</nav><nav class="center-text"></header>';
-echo '<h1 style="font-size: 72px; font-weight: 600; text-align: center; margin: 0; margin-top: 40px;">Last Albums</h1>';
-
-$sql = "SELECT * FROM db_web.content";
-if ($stmt = $db->prepare($sql)) {
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            echo '<div class="container">';
-            while ($row = $result->fetch_assoc()) {
-                $companyName = htmlspecialchars($row["companyname"], ENT_QUOTES, 'UTF-8');
-                $companylink = htmlspecialchars($row["link"], ENT_QUOTES, 'UTF-8');
-                $companyid = htmlspecialchars($row["id"], ENT_QUOTES, 'UTF-8');
-                $companylogo = htmlspecialchars($row["logo"], ENT_QUOTES, 'UTF-8');
-                $companyind = htmlspecialchars($row["industry"], ENT_QUOTES, 'UTF-8');
-                $album = $row["album"];
-                echo '<div class="main-div" style="display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 10px; background-color: #1e1e1e; border-radius: 12px; width: 550px; height: 450px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                    <div style="width: 100%; height: 90%; border-radius: 10px; overflow: hidden;">
-                        '.$album.'
-                    </div>
-                    <div style="color: white; font-size: 18px; font-family: Gilroy, sans-serif; font-weight: 600; text-align: center;">
-                        '.$companyName.'
-                    </div>
-                </div>';
-            }      
-            echo '</div>';
-        }
-    }
-}
-
-closeDB();
-
-echo '
-<footer>
-<div class="footer-container">
-    <div class="footer-links">
-        <a href="music.php">Музыка</a>
-        <a href="events.php">События</a>
-        <a href="news.php">Новости</a>
-        <a href="about.php">О нас</a>
-    </div>
-</div>
-    <div class="footer-social" style="font-size: 20px; display: inline-flex; margin-left: 50%; font-weight: 600;">
-        Контакты
-    </div>
-        <div class="footer-socials">
-            <a href="https://t.me/astarinokk" class="social-icon">Telegram</a>
-            <a href="https://www.instagram.com/astarinokk/" class="social-icon">Instagram</a>
-            <a href="#" class="social-icon">TG channel</a>
-        </div>
-    <div class="footer-info">
-            <p>&copy; 2025 SoundFusion. Все права защищены.</p>
-        </div>
-        <div class="number">
-            <p>+7 (900) 000-00-00
-            </p>
-    </div>
-    <div class="footer-info2">
-        <p>Представленная на данном сайте информация носит исключительно справочный и образовательный характер. Проект создан в рамках изучения веб-разработки и посвящён музыкальной тематике, включая информацию об исполнителях, являющихся объектом личного интереса автора. Все права на упомянутые материалы принадлежат их законным правообладателям.</p>
-    </div>
-</footer>
-</body></html>';
+$searchQuery = trim(mb_substr((string) ($_GET['q'] ?? ''), 0, 100));
+$artists = fetchArtists($db, null, $searchQuery, true);
+renderHeader('Музыка', $db);
 ?>
+<section class="page-intro">
+    <p class="eyebrow">Каталог</p>
+    <h1>Найдите артиста и его музыку.</h1>
+    <p>Откройте карточку исполнителя или сразу найдите его музыку в Spotify и SoundCloud. Ссылки ведут на поиск по имени артиста.</p>
+</section>
+<div class="music-search-wrap">
+    <form class="music-search" role="search" method="get" action="music.php">
+        <label class="sr-only" for="artist-search">Поиск исполнителя</label>
+        <span class="music-search-icon" aria-hidden="true">⌕</span>
+        <input id="artist-search" name="q" type="search" maxlength="100" placeholder="Найти артиста или жанр…" value="<?= e($searchQuery) ?>" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="artist-search-results" autocomplete="off">
+        <button type="submit">Найти</button>
+    </form>
+    <div class="music-search-popover" id="artist-search-popover" hidden>
+        <div class="music-search-results" id="artist-search-results" role="listbox" aria-label="Подходящие исполнители"></div>
+        <p class="music-search-message" id="artist-search-message" role="status" hidden></p>
+    </div>
+    <p class="sr-only" id="artist-search-status" role="status" aria-live="polite"></p>
+</div>
+<?php if (!$db): ?>
+    <div class="empty-state"><p>Каталог временно недоступен: проверьте подключение к MySQL и настройки в <code>config.example.php</code>.</p></div>
+<?php elseif (!$artists && $searchQuery !== ''): ?>
+    <div class="empty-state"><p>По запросу «<?= e($searchQuery) ?>» ничего не нашлось.</p><p><a class="text-link" href="music.php">Показать весь каталог ↗</a></p></div>
+<?php elseif (!$artists): ?>
+    <div class="empty-state"><p>В базе пока нет музыкального контента.</p></div>
+<?php else: ?>
+    <?php if ($searchQuery !== ''): ?><p class="music-search-count">Найдено: <?= count($artists) ?></p><?php endif; ?>
+    <div class="artist-grid"><?php foreach ($artists as $artist) { renderArtistCard($artist); } ?></div>
+<?php endif; ?>
+<script src="music-search.js" defer></script>
+<?php renderFooter(); closeDB($db); ?>

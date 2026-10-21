@@ -3,6 +3,11 @@
 .env.*
 !.env.example
 config.local.php
+local.config.php
+
+# User-uploaded personal avatars stay local and are not included in public releases.
+uploads/avatars/*
+!uploads/avatars/.htaccess
 
 # Журналы и временные файлы
 *.log

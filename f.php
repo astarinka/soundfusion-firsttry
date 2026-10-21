@@ -1,122 +1,73 @@
 <?php
-$companyid = htmlspecialchars($_GET["companyid"], ENT_QUOTES, 'UTF-8');
-require_once('function.php');
-
-echo '<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoundFusion - my music</title>
-    <link rel="stylesheet" href="style.css">
-</head>';
+require_once __DIR__ . '/function.php';
 $db = connectDB();
-
-$sql = "SELECT c.*, i.description FROM content AS c LEFT JOIN industry AS i ON c.industry = i.id WHERE c.id = ?";
-if ($stmt = $db->prepare($sql)) {
-    $stmt->bind_param('i', $companyid);
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $companyId = htmlspecialchars($row["id"], ENT_QUOTES, 'UTF-8');
-                $companyName = htmlspecialchars($row["companyname"], ENT_QUOTES, 'UTF-8');
-                $companyinfo = htmlspecialchars($row["about"], ENT_QUOTES, 'UTF-8');
-                $companyLogo = htmlspecialchars($row["logo"], ENT_QUOTES, 'UTF-8');
-                $companyind = htmlspecialchars($row["industry"], ENT_QUOTES, 'UTF-8');
-                $companyStatus = htmlspecialchars($row["active"], ENT_QUOTES, 'UTF-8');
-                $companylink = htmlspecialchars($row["link"], ENT_QUOTES, 'UTF-8');
-                $companydesc = htmlspecialchars($row["description"], ENT_QUOTES, 'UTF-8');
-echo '<body>
-    <header><a href="index.php">
-        <img src="SoundFusion white.png" class="logopos" /></a>
-        <div><h1 style="color: azure;" class="center-text"><strong>'.$companyName.'</strong></h1>
-    </div>
-    <nav class="menu-button">';
-
-$db = connectDB();
-
-$sql = "SELECT * FROM main ORDER BY id";
-if ($stmt = $db->prepare($sql)) {
-    if ($stmt->execute()) {
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $userid = htmlspecialchars($row["id"], ENT_QUOTES, 'UTF-8');
-                $username = htmlspecialchars($row["name"], ENT_QUOTES, 'UTF-8');
-                $userlink = htmlspecialchars($row["link"], ENT_QUOTES, 'UTF-8');
-                $activeClass = isActive(basename($userlink)) ? 'active' : '';
-                echo '<a href="' . $userlink . '"><button>' . $username . '</button></a>';
-            }
-        } else {
-            echo "<p>Нет данных в таблице menu.</p>";
+$artistId = filter_input(INPUT_GET, 'companyid', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+$artist = null;
+if ($db && $artistId) {
+    $statement = $db->prepare('SELECT c.*, i.description AS category_name FROM content c LEFT JOIN industry i ON i.id = c.industry WHERE c.id = ? AND c.active = 1 LIMIT 1');
+    if ($statement) {
+        $statement->bind_param('i', $artistId);
+        if ($statement->execute()) {
+            $result = $statement->get_result();
+            $artist = $result ? $result->fetch_assoc() : null;
         }
-    } else {
-        echo "<p>Ошибка запроса: " . $db->error . "</p>";
+        $statement->close();
     }
 }
-echo '</nav><nav class = "center-text"></header>';
-
-
-
-
-
-            }
-        } else {
-            echo '<p>Нет данных для отображения.</p>';
-        }
-    } else {
-        echo '<p>Ошибка выполнения запроса: ' . htmlspecialchars($db->error, ENT_QUOTES, 'UTF-8') . '</p>';
-    }
-} else {
-    echo '<p>Ошибка подготовки запроса: ' . htmlspecialchars($db->error, ENT_QUOTES, 'UTF-8') . '</p>';
+if (!$artist) {
+    http_response_code($db ? 404 : 503);
 }
-
-
-
-echo '  
-  <img style="width: 616px; height: 616px; left: 101px; top: 162px; position: absolute; border-radius: 25px" src="'.$companyLogo.'" />
-  <div style="left: 960px; top: 162px; position: absolute; text-align: center; color: white; font-size: 96px; font-family: Gilroy; font-weight: 600; word-wrap: break-word">'.$companyName.'</div>
-  <div style="width: 961px; left: 799px; top: 333px; position: absolute; color: white; font-size: 26px; font-family: Gilroy; font-weight: 300; word-wrap: break-word">'.nl2br(html_entity_decode(htmlspecialchars($companyinfo))).'</div>
-  <div style="left: 799px; top: 685px; position: absolute; color: white; font-size: 26px; font-family: Gilroy; font-weight: 600; word-wrap: break-word"><a href="desc.php?desc='.$companyind.'" style="text-decoration: none; color: #4a7ebB;">'.htmlspecialchars($companydesc, ENT_QUOTES, 'UTF-8').'</a></div>
-  </div>';
-  
-
-
-
-closeDB();
-
- echo '<div style="height: 100%; margin: 0; padding: 0;"></div>';
-    echo '
-    <footer>
-    <div class="footer-container">
-
-        <div class="footer-links">
-            <a href="music.php">Музыка</a>
-            <a href="events.php">События</a>
-            <a href="news.php">Новости</a>
-            <a href="about.php">О нас</a>
-        </div>
-
-    </div>
-        <div class="footer-social" style="font-size: 20px;  display: inline-flex; margin-left: 50%; font-weight: 600;">
-        Контакты
-        </div>
-        <div class="footer-socials">
-            <a href="https://t.me/astarinokk" class="social-icon">Telegram</a>
-            <a href="https://www.instagram.com/astarinokk/" class="social-icon">Instagram</a>
-            <a href="#" class="social-icon">TG channel</a>
-        </div>
-    <div class="footer-info">
-            <p>&copy; 2025 SoundFusion. Все права защищены.</p>
-        </div>
-        <div class="number">
-            <p>+7 (900) 000-00-00
-            </p>
-        </div>
-        <div class="footer-info2">
-            <p>Представленная на данном сайте информация носит исключительно справочный и образовательный характер. Проект создан в рамках изучения веб-разработки и посвящён музыкальной тематике, включая информацию об исполнителях, являющихся объектом личного интереса автора. Все права на упомянутые материалы принадлежат их законным правообладателям.
-            </p>
-        </div>
-</footer>    
-    </nav></body></html>';
+renderHeader($artist ? (string) $artist['companyname'] : 'Исполнитель не найден', $db);
 ?>
+<?php if (!$db): ?>
+    <div class="empty-state"><h1>Каталог временно недоступен</h1><p>Проверьте, что MySQL запущен и база <code>db_web</code> импортирована.</p></div>
+<?php elseif (!$artist): ?>
+    <div class="empty-state"><p class="eyebrow">404 · Каталог</p><h1>Исполнитель не найден</h1><p>Ссылка могла устареть или такой записи нет в каталоге.</p><a class="button" href="music.php">Вернуться к музыке</a></div>
+<?php else: ?>
+    <?php
+    $image = artistImagePath((string) ($artist['logo'] ?? ''));
+    $externalUrl = trim((string) ($artist['link'] ?? ''));
+    $externalUrlParts = $externalUrl !== '' ? parse_url($externalUrl) : false;
+    if (!filter_var($externalUrl, FILTER_VALIDATE_URL) || !in_array(strtolower((string) ($externalUrlParts['scheme'] ?? '')), ['http', 'https'], true)) {
+        $externalUrl = '';
+    }
+    ?>
+    <article class="artist-profile">
+      <section class="artist-detail">
+        <figure class="artist-detail-art">
+            <?php if ($image !== ''): ?>
+                <img src="<?= e($image) ?>" alt="Портрет <?= e((string) $artist['companyname']) ?>">
+            <?php else: ?>
+                <div class="image-fallback">SF</div>
+            <?php endif; ?>
+            <figcaption><?= e((string) ($artist['category_name'] ?: 'Музыкальный каталог')) ?></figcaption>
+        </figure>
+        <div class="artist-detail-copy">
+            <p class="eyebrow">SoundFusion · артист</p>
+            <h1><?= e((string) $artist['companyname']) ?></h1>
+            <p class="artist-detail-summary"><?= !empty($artist['description']) ? e((string) $artist['description']) : 'Знакомьтесь с биографией и релизами артиста в каталоге SoundFusion.' ?></p>
+            <?php if (!empty($artist['category_name'])): ?><a class="detail-category" href="desc.php?desc=<?= (int) $artist['industry'] ?>">Жанр · <?= e((string) $artist['category_name']) ?></a><?php endif; ?>
+            <div class="artist-detail-actions">
+                <?php if ($externalUrl !== ''): ?><a class="button button-primary" href="<?= e($externalUrl) ?>" target="_blank" rel="noopener noreferrer">Официальная страница ↗</a><?php endif; ?>
+                <?php renderArtistChatButton($artist); ?>
+                <?php renderArtistPlatforms($artist); ?>
+            </div>
+        </div>
+      </section>
+
+      <section class="artist-detail-more" aria-label="Подробнее об артисте">
+        <div class="artist-biography">
+            <p class="eyebrow">Биография</p>
+            <h2>История и звучание</h2>
+            <?php if (!empty($artist['about'])): ?><p><?= nl2br(e((string) $artist['about'])) ?></p><?php else: ?><p>Биография этого исполнителя пока готовится. Загляните позже — каталог будет пополняться.</p><?php endif; ?>
+        </div>
+        <aside class="artist-release-panel">
+            <p class="eyebrow">В фокусе</p>
+            <h2><?= !empty($artist['album']) ? 'Релизы и музыка' : 'Звучание артиста' ?></h2>
+            <p><?= !empty($artist['album']) ? nl2br(e((string) $artist['album'])) : (!empty($artist['description']) ? e((string) $artist['description']) : 'Подборка релизов появится здесь, когда будет добавлена в каталог.') ?></p>
+            <a class="text-link" href="music.php">← Все исполнители</a>
+        </aside>
+      </section>
+    </article>
+<?php endif; ?>
+<?php renderFooter(); closeDB($db); ?>

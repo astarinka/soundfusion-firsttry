@@ -1,0 +1,18 @@
+# Локальные настройки и секреты
+.env
+.env.*
+!.env.example
+config.local.php
+
+# Журналы и временные файлы
+*.log
+*.tmp
+*.bak
+
+# Настройки редакторов
+.vscode/
+.idea/
+
+# Файлы операционной системы
+.DS_Store
+Thumbs.db

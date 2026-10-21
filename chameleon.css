@@ -1,0 +1,306 @@
+/* main */
+
+position: relative;
+width: 1440px;
+height: 900px;
+
+
+
+/* Frame 1 */
+
+position: absolute;
+width: 1440px;
+height: 900px;
+left: 0px;
+top: 0px;
+
+background: #FFFFFF;
+
+
+/* Frame 2 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+position: absolute;
+width: 100px;
+height: 42px;
+right: 144px;
+top: 33px;
+
+
+
+/* кнопка */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 10px 20px;
+gap: 10px;
+
+margin: 0 auto;
+width: 100px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Group 1 */
+
+width: 41px;
+height: 22px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Туры */
+
+position: absolute;
+width: 41px;
+height: 22px;
+left: 20px;
+top: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 22px;
+/* identical to box height */
+
+color: #000000;
+
+
+
+/* Frame 4 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+position: absolute;
+width: 100px;
+height: 42px;
+right: 244px;
+top: 33px;
+
+
+
+/* кнопка */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 10px 20px;
+gap: 10px;
+
+margin: 0 auto;
+width: 100px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Group 1 */
+
+width: 56px;
+height: 22px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Услуги */
+
+position: absolute;
+width: 56px;
+height: 22px;
+left: 20px;
+top: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 22px;
+/* identical to box height */
+
+color: #000000;
+
+
+
+/* Frame 3 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+position: absolute;
+width: 100px;
+height: 42px;
+right: 44px;
+top: 33px;
+
+
+
+/* кнопка */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 10px 20px;
+gap: 10px;
+
+width: 100px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Group 1 */
+
+margin: 0 auto;
+width: 80px;
+height: 22px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Контакты */
+
+position: absolute;
+width: 80px;
+height: 22px;
+left: 10px;
+top: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 22px;
+/* identical to box height */
+
+color: #000000;
+
+
+
+/* Frame 2 */
+
+position: absolute;
+width: 662px;
+height: 900px;
+left: 0px;
+top: 0px;
+
+background: url(.jpg);
+
+
+/* Vector */
+
+position: absolute;
+left: 48.12%;
+right: 38.33%;
+top: 2.56%;
+bottom: 90.56%;
+
+background: #394149;
+
+
+/* Frame 2 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+
+position: absolute;
+width: 500px;
+height: 178px;
+left: 696px;
+top: 272px;
+
+
+
+/* Самый лучший заголовок. */
+
+width: 500px;
+height: 156px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 64px;
+line-height: 78px;
+
+color: #000000;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* и, естественно, его подзаголовок */
+
+width: 500px;
+height: 22px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 18px;
+line-height: 22px;
+/* identical to box height */
+
+color: #000000;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
